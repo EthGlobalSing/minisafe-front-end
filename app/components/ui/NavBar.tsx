@@ -7,6 +7,7 @@ interface NavBarProps {
     windowName: string;
     isMenuOpen: boolean;
     setIsMenuOpen: (isMenuOpen: boolean) => void;
+    changeDisplay: (page: string) => void;
 }
 
 export function NavBar(props: NavBarProps) {
@@ -38,7 +39,7 @@ export function NavBar(props: NavBarProps) {
                     <Link
                         color={"foreground"}
                         className={`w-full text-2xl mb-8 text-darkGreen ${dmSerifText.className} ${index === 0 ? 'mt-12 mb-20' : ''}`}
-                        href={item === 'Welcome' ? '/' : `show${item}`}
+                        onClick={() => { props.changeDisplay(item) }}
                         size="lg"
                     >
                         {item}

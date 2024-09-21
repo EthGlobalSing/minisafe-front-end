@@ -11,6 +11,8 @@ import WebApp from '@twa-dev/sdk'
 
 import { Button, CircularProgress, NextUIProvider } from "@nextui-org/react";
 import { NavBar } from "./components/ui/NavBar";
+import { WelcomeDisplay } from "./components/WelcomeDisplay";
+import SetupDisplay from "./components/setup/SetupDisplay";
 
 export default function Main() {
   // Dynamic
@@ -21,7 +23,7 @@ export default function Main() {
   const { telegramSignIn } = useTelegramLogin();
 
   // Data
-  const [username, setUsername] = useState<string | null>(null);
+  const [username, setUsername] = useState<string>();
 
   // App management
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -59,7 +61,7 @@ export default function Main() {
     // }
 
     if (WebApp.initDataUnsafe.user) {
-      setUsername(WebApp.initDataUnsafe.user);
+      setUsername(WebApp.initDataUnsafe.user.username);
       setIsMenuOpen(false);
     }
   }, [])
@@ -80,17 +82,23 @@ export default function Main() {
   return (
     <NextUIProvider>
       <NavBar isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} windowName="MiniSafe" />
-      <main className="flex min-h-screen items-center justify-center py-4">
+      <main className="flex min-h-screen items-center bg-darkGreen justify-center py-4">
         {isLoading ? <CircularProgress color='default' /> :
-          <>
-            <DynamicWidget />
-            <Button
-              className='bg-darkGreen text-lightGreen font-bold w-full'
-              onClick={() => {
-                //WebApp.HapticFeedback.impactOccurred('heavy');
-                signMessage('0x1', '0x2', 1, 2, 1000);
-              }}>Send</Button>
-          </>}
+          currentPage === 'welcome' ?
+            <WelcomeDisplay title={username ? `Hey ${username} 👋, welcome to MiniSafe.` : `Welcome to MiniSafe.`} changeDisplay={changeDisplay} />
+            :
+            currentPage === 'setup' ?
+              <SetupDisplay safeWallets={[]} changeDisplay={changeDisplay} />
+              :
+              <>
+                <DynamicWidget />
+                <Button
+                  className='bg-darkGreen text-lightGreen font-bold w-full'
+                  onClick={() => {
+                    //WebApp.HapticFeedback.impactOccurred('heavy');
+                    signMessage('0x1', '0x2', 1, 2, 1000);
+                  }}>Send</Button>
+              </>}
       </main>
     </NextUIProvider>
   );
