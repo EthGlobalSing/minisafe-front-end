@@ -1,21 +1,34 @@
 "use client";
 
 import { useEffect, useState } from "react";
+
 import {
   DynamicWidget,
   useTelegramLogin,
   useDynamicContext,
 } from "../lib/dynamic";
+import WebApp from '@twa-dev/sdk'
 
-import { Button, CircularProgress, Input, NextUIProvider } from "@nextui-org/react";
+import { Button, CircularProgress, NextUIProvider } from "@nextui-org/react";
+import { NavBar } from "./components/ui/NavBar";
 
 export default function Main() {
+  // Dynamic
   const { sdkHasLoaded, user } = useDynamicContext();
-  const { telegramSignIn } = useTelegramLogin();
   const { primaryWallet } = useDynamicContext();
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [result, setResult] = useState<string>();
 
+  // Telegram
+  const { telegramSignIn } = useTelegramLogin();
+
+  // Data
+  const [username, setUsername] = useState<string | null>(null);
+
+  // App management
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [currentPage, setCurrentPage] = useState('welcome');
+
+  // Front-end
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   async function signMessage(fromAddress: string, toAddress: string, fromChain: number, toChain: number, amountInWei: number) {
     if (!primaryWallet) return;
@@ -25,11 +38,31 @@ export default function Main() {
     try {
       signature = await primaryWallet.signMessage(`${fromAddress}-${toAddress}-${fromChain}-${toChain}-${amountInWei}`);
     } catch (err) {
-      setResult('Error creating the signature.');
+      // TODO Set error handling
     }
 
-    setResult(signature);
+    // TODO Do something with the signature
   }
+
+  function changeDisplay(page: string) {
+    setCurrentPage(page);
+  }
+
+  useEffect(() => {
+    // if (WebApp.BiometricManager.isBiometricAvailable) {
+    //   WebApp.BiometricManager.requestAccess({ reason: 'Allow Telegram to access your MiniSafe' }, () => {
+    //   });
+
+    //   WebApp.BiometricManager.authenticate({ reason: 'Allow Telegram to access your MiniSafe' }, () => {
+    //     setIsBiometricUserConnected(true);
+    //   });
+    // }
+
+    if (WebApp.initDataUnsafe.user) {
+      setUsername(WebApp.initDataUnsafe.user);
+      setIsMenuOpen(false);
+    }
+  }, [])
 
   useEffect(() => {
     if (!sdkHasLoaded) return;
@@ -46,6 +79,7 @@ export default function Main() {
 
   return (
     <NextUIProvider>
+      <NavBar isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} windowName="MiniSafe" />
       <main className="flex min-h-screen items-center justify-center py-4">
         {isLoading ? <CircularProgress color='default' /> :
           <>
@@ -56,7 +90,6 @@ export default function Main() {
                 //WebApp.HapticFeedback.impactOccurred('heavy');
                 signMessage('0x1', '0x2', 1, 2, 1000);
               }}>Send</Button>
-            {result && <p>{result}</p>}
           </>}
       </main>
     </NextUIProvider>
