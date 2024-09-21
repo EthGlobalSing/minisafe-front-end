@@ -13,11 +13,12 @@ import { Button, CircularProgress, NextUIProvider } from "@nextui-org/react";
 import { NavBar } from "./components/ui/NavBar";
 import { WelcomeDisplay } from "./components/WelcomeDisplay";
 import SetupDisplay from "./components/setup/SetupDisplay";
+import WalletDisplay from "./components/WalletDisplay";
+import SendDisplay from "./components/SendDisplay";
 
 export default function Main() {
   // Dynamic
   const { sdkHasLoaded, user } = useDynamicContext();
-  const { primaryWallet } = useDynamicContext();
 
   // Telegram
   const { telegramSignIn } = useTelegramLogin();
@@ -32,25 +33,19 @@ export default function Main() {
   // Front-end
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  async function signMessage(fromAddress: string, toAddress: string, fromChain: number, toChain: number, amountInWei: number) {
-    if (!primaryWallet) return;
-
-    let signature;
-
-    try {
-      signature = await primaryWallet.signMessage(`${fromAddress}-${toAddress}-${fromChain}-${toChain}-${amountInWei}`);
-    } catch (err) {
-      // TODO Set error handling
-    }
-
-    // TODO Do something with the signature
-  }
-
   function changeDisplay(page: string) {
     setCurrentPage(page);
+    setIsMenuOpen(false);
   }
 
   useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const page = urlParams.get('page');
+
+    if (page) {
+      setCurrentPage(page);
+    }
+
     // if (WebApp.BiometricManager.isBiometricAvailable) {
     //   WebApp.BiometricManager.requestAccess({ reason: 'Allow Telegram to access your MiniSafe' }, () => {
     //   });
@@ -81,25 +76,25 @@ export default function Main() {
 
   return (
     <NextUIProvider>
-      <NavBar isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} windowName="MiniSafe" />
-      <main className="flex min-h-screen items-center bg-darkGreen justify-center py-4">
+      {currentPage.toLowerCase() !== 'send' && <NavBar isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} windowName={currentPage.charAt(0).toUpperCase() + currentPage.slice(1)} changeDisplay={changeDisplay} />}
+      <main className={`flex min-h-screen items-center justify-center py-4 ${currentPage.toLowerCase() === 'send' ? 'bg-lightGreen' : 'bg-darkGreen'}`}>
         {isLoading ? <CircularProgress color='default' /> :
-          currentPage === 'welcome' ?
+          currentPage.toLowerCase() === 'welcome' ?
             <WelcomeDisplay title={username ? `Hey ${username} 👋, welcome to MiniSafe.` : `Welcome to MiniSafe.`} changeDisplay={changeDisplay} />
             :
-            currentPage === 'setup' ?
+            currentPage.toLowerCase() === 'setup' ?
               <SetupDisplay safeWallets={[]} changeDisplay={changeDisplay} />
               :
-              <>
-                <DynamicWidget />
-                <Button
-                  className='bg-darkGreen text-lightGreen font-bold w-full'
-                  onClick={() => {
-                    //WebApp.HapticFeedback.impactOccurred('heavy');
-                    signMessage('0x1', '0x2', 1, 2, 1000);
-                  }}>Send</Button>
-              </>}
+              currentPage.toLowerCase() === 'wallet' ?
+                <WalletDisplay safeWallets={[]} />
+                :
+                currentPage.toLowerCase() === 'send' ?
+                  <SendDisplay />
+                  :
+                  <>
+                    <DynamicWidget />
+                  </>}
       </main>
-    </NextUIProvider>
+    </NextUIProvider >
   );
 }

@@ -14,7 +14,7 @@ export function NavBar(props: NavBarProps) {
     const menuItems = [
         "Explore apps",
         "Welcome",
-        "Confirmation",
+        "Send",
         "Assets",
         "Swap",
         "History",
