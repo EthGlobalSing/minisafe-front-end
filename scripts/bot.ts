@@ -42,7 +42,8 @@ bot.start((ctx: any) => {
   ctx.reply("Welcome to MiniSafe 🍏", keyboard);
 });
 
-bot.action('menu', (ctx: any) => {
+// Start command handling for the bot
+bot.command("menu", ((ctx: any) => {
   const keyboard = {
     reply_markup: {
       inline_keyboard: [
@@ -76,8 +77,8 @@ bot.action('menu', (ctx: any) => {
     },
   };
 
-  ctx.reply("Welcome to XYZ Mini Web App", keyboard);
-});
+  ctx.reply("Select an action with Mini Safe 🔥", keyboard);
+}));
 
 // Handle "Send 📤" action
 bot.action("send_money", (ctx: any) => {
