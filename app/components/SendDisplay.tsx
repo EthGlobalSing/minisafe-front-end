@@ -7,16 +7,16 @@ import { dmSerifText } from "../shared/fonts";
 import WebApp from "@twa-dev/sdk";
 import { useDynamicContext } from '@dynamic-labs/sdk-react-core';
 
-export default function SendDisplay() {
+export default function SendDisplay({ toAddress, amount, fromChain }: { toAddress: string, amount: number, fromChain: number }) {
     const { primaryWallet } = useDynamicContext();
 
     const [transaction, setTransaction] = useState({
-        amountInUSD: 938.92,
+        amountInUSD: amount,
         direction: 'out',
-        chainId: 1,
+        chainId: fromChain,
         to: {
             username: 'pybast',
-            address: "0xZJdhb28dJ"
+            address: toAddress
         }
     });
 

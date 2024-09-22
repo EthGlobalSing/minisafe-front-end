@@ -136,7 +136,7 @@ export default function Main() {
                 <WalletDisplay safeWallets={safeWallets} />
                 :
                 currentPage.toLowerCase() === 'send' ?
-                  <SendDisplay />
+                  <SendDisplay toAddress={""} amount={Number(amountInUSD)} fromChain={0} />
                   :
                   currentPage.toLowerCase() === 'apps' ?
                     <AppsDisplay />
