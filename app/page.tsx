@@ -15,6 +15,7 @@ import { WelcomeDisplay } from "./components/WelcomeDisplay";
 import SetupDisplay from "./components/setup/SetupDisplay";
 import WalletDisplay from "./components/WalletDisplay";
 import SendDisplay from "./components/SendDisplay";
+import AppsDisplay from "./components/apps/AppsDisplay";
 
 export default function Main() {
   // Dynamic
@@ -41,6 +42,9 @@ export default function Main() {
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const page = urlParams.get('page');
+    const amountInUSD = urlParams.get('amountInUSD');
+    const toUsername = urlParams.get('toUsername');
+    const fromChain = urlParams.get('fromChain');
 
     if (page) {
       setCurrentPage(page);
@@ -76,8 +80,8 @@ export default function Main() {
 
   return (
     <NextUIProvider>
-      {currentPage.toLowerCase() !== 'send' && <NavBar isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} windowName={currentPage.charAt(0).toUpperCase() + currentPage.slice(1)} changeDisplay={changeDisplay} />}
-      <main className={`flex min-h-screen items-center justify-center py-4 ${currentPage.toLowerCase() === 'send' ? 'bg-lightGreen' : 'bg-darkGreen'}`}>
+      {currentPage.toLowerCase() !== 'send' && <NavBar isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} windowName={currentPage.charAt(0).toUpperCase() + currentPage.slice(1)} changeDisplay={changeDisplay} currentPage={currentPage} />}
+      <main className={`flex min-h-screen items-center justify-center py-4 ${currentPage.toLowerCase() === 'send' || currentPage.toLowerCase() === 'apps' ? 'bg-lightGreen' : 'bg-darkGreen'}`}>
         {isLoading ? <CircularProgress color='default' /> :
           currentPage.toLowerCase() === 'welcome' ?
             <WelcomeDisplay title={username ? `Hey ${username} 👋, welcome to MiniSafe.` : `Welcome to MiniSafe.`} changeDisplay={changeDisplay} />
@@ -91,9 +95,12 @@ export default function Main() {
                 currentPage.toLowerCase() === 'send' ?
                   <SendDisplay />
                   :
-                  <>
-                    <DynamicWidget />
-                  </>}
+                  currentPage.toLowerCase() === 'apps' ?
+                    <AppsDisplay />
+                    :
+                    <>
+                      <DynamicWidget />
+                    </>}
       </main>
     </NextUIProvider >
   );

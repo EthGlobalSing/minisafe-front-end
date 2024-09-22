@@ -7,28 +7,27 @@ interface NavBarProps {
     windowName: string;
     isMenuOpen: boolean;
     setIsMenuOpen: (isMenuOpen: boolean) => void;
+    currentPage: string;
     changeDisplay: (page: string) => void;
 }
 
 export function NavBar(props: NavBarProps) {
     const menuItems = [
         "Explore apps",
-        "Welcome",
-        "Send",
-        "Assets",
+        "Wallet",
         "Swap",
         "History",
         "Settings",
     ];
 
-    return (<Navbar onMenuOpenChange={props.setIsMenuOpen} className={props.isMenuOpen ? 'bg-lightGreen' : 'bg-darkGreen'}>
+    return (<Navbar onMenuOpenChange={props.setIsMenuOpen} className={props.isMenuOpen || props.currentPage === 'apps' ? 'bg-lightGreen' : 'bg-darkGreen'}>
         <NavbarContent>
             <NavbarMenuToggle
                 aria-label={props.isMenuOpen ? "Close menu" : "Open menu"}
-                className={`sm:hidden ${props.isMenuOpen ? 'text-darkGreen' : 'text-white'}`}
+                className={`sm:hidden ${props.isMenuOpen || props.currentPage === 'apps' ? 'text-darkGreen' : 'text-white'}`}
             />
             <NavbarBrand>
-                <p className="font-bold text-inherit text-lightGreen">{props.windowName}</p>
+                <p className={`font-bold text-inherit ${props.currentPage === 'apps' ? 'text-darkGreen' : 'text-lightGreen'}`}>{props.windowName}</p>
             </NavbarBrand>
         </NavbarContent>
 
@@ -39,7 +38,7 @@ export function NavBar(props: NavBarProps) {
                     <Link
                         color={"foreground"}
                         className={`w-full text-2xl mb-8 text-darkGreen ${dmSerifText.className} ${index === 0 ? 'mt-12 mb-20' : ''}`}
-                        onClick={() => { props.changeDisplay(item) }}
+                        onClick={() => { props.changeDisplay(item === "Explore apps" ? 'apps' : item.toLowerCase()) }}
                         size="lg"
                     >
                         {item}

@@ -25,8 +25,8 @@ export default function SetupDisplay({ safeWallets, changeDisplay }: SetupDispla
     return (
         <div className='flex flex-col gap-2'>
             {loading ? <CircularProgress className='m-auto' color="default" aria-label="Loading..." /> : <>
-                <DynamicWidget />
                 {safeWallets.length === 0 ? <SafeDetectedDisplay safeWallets={safeWallets} changeDisplay={changeDisplay} /> : <NoSafeErrorDisplay changeDisplay={changeDisplay} />}
+                <DynamicWidget />
             </>
             }
         </div>
